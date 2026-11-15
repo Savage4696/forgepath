@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgepath — NASA Space Apps Challenge Slide Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: rgba(16, 21, 34, 0.85);
+      --card-border: rgba(99, 137, 214, 0.25);
+      --accent: #ff6239;
+      --accent-blue: #4ea8de;
+      --accent-green: #38bdf8;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --font-body: 'Space Grotesk', -apple-system, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Presentation Header & Navigation Bar */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(7, 9, 14, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    .brand span.title {
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Slide Deck Stage */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .slide {
+      position: absolute;
+      width: 90%;
+      max-width: 1180px;
+      aspect-ratio: 16 / 9;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 3.5rem 4rem;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(78, 168, 222, 0.08);
+      animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      backdrop-filter: blur(20px);
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Slide Content Typography */
+    .tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin-bottom: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      background: rgba(78, 168, 222, 0.1);
+      border-radius: 4px;
+      border: 1px solid rgba(78, 168, 222, 0.25);
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+
+    /* Grid Layouts inside slides */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      flex: 1;
+      align-items: center;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      flex: 1;
+      align-items: stretch;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0.75rem;
+    }
+
+    .card h3 {
+      font-size: 1.15rem;
+      color: #fff;
+    }
+
+    .card p, .card li {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    ul.bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    ul.bullet-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      color: #cbd5e1;
+    }
+
+    ul.bullet-list li::before {
+      content: '▹';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    .stat-badge {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 1.25rem;
+      border-left: 3px solid var(--accent);
+      background: rgba(255, 98, 57, 0.05);
+      border-radius: 0 8px 8px 0;
+      margin-top: 0.75rem;
+    }
+
+    .stat-badge strong {
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    .stat-badge span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Slide Footer */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .speaker-note-hint {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Print to PDF rules */
+    @media print {
+      body {
+        overflow: visible;
+        background: #000;
+      }
+      header {
+        display: none !important;
+      }
+      .deck-container {
+        padding: 0;
+        display: block;
+      }
+      .slide {
+        display: flex !important;
+        position: relative !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        page-break-after: always;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 4rem !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="hud-blink" style="color:var(--accent);">●</span>
+      <span class="title">FORGEPATH</span>
+      <span>// NASA SPACE APPS DEMO</span>
+    </div>
+    <div class="controls">
+      <span class="slide-counter" id="counter">SLIDE 1 / 7</span>
+      <button class="nav-btn" onclick="prevSlide()">◀ PREV</button>
+      <button class="nav-btn" onclick="nextSlide()">NEXT ▶</button>
+      <button class="nav-btn" onclick="window.print()" title="Print or Save as PDF (16:9)">EXPORT PDF</button>
+    </div>
+  </header>
+
+  <main class="deck-container">
+
+    <!-- SLIDE 1: TITLE & INTRODUCTION -->
+    <section class="slide active" id="slide-1">
+      <div>
+        <span class="tag">NASA SPACE APPS CHALLENGE · DEMO DECK</span>
+        <h1>FORGEPATH</h1>
+        <p class="subtitle">The Solar System Hardware Atlas & Planetary Mission Simulator</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <ul class="bullet-list">
+            <li><strong>Objective</strong>: Introduce school-age enthusiasts to the machines left on the Moon, Mars, and Deep Space—and the science they made possible.</li>
+            <li><strong>Experience</strong>: WebGL 3D environments, dual-mode orbital globes, hardware anatomy breakdowns, and mission route planning.</li>
+            <li><strong>Zero-Install Architecture</strong>: Runs immediately on any classroom device via modern browser graphics.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: rgba(255, 98, 57, 0.3); background: rgba(255, 98, 57, 0.03);">
+          <span class="tag" style="color:var(--accent); border-color:var(--accent);">PROJECT SCOPE</span>
+          <h3>5 Fundamental Questions Answered</h3>
+          <p>What was left behind? Why was it built? Who carried the mission? What challenges did it face? What science did it unlock?</p>
+          <div class="stat-badge">
+            <strong>12 Planetary Artifacts · 3 Worlds</strong>
+            <span>Moon (Apollo, Luna) · Mars (Perseverance, Curiosity) · Deep Space (JWST, Voyager)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>FORGEPATH // GLOBAL AWARD PRESENTATION</span>
+        <span class="speaker-note-hint">Tip: Use Arrow keys or click Next</span>
+        <span>SLIDE 01 / 07</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: THE CHALLENGE & PROBLEM -->
+    <section class="slide" id="slide-2">
+      <div>
+        <span class="tag">THE PROBLEM & AUDIENCE</span>
+        <h2>The Challenge: Making Space Archaeology Actionable</h2>
+        <p class="subtitle">Bridging the gap between static history and participatory science.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <span class="tag">THE GAP</span>
+          <h3>Static Textbooks</h3>
+          <p>Extraterrestrial artifacts are usually presented as disconnected museum facts. Students miss the engineering decisions and the harsh reality of operating on other worlds.</p>
+        </div>
+        <div class="card">
+          <span class="tag">THE MISSION</span>
+          <h3>The 5 Core Inquiries</h3>
+          <p>We designed the atlas around what school-age learners ask: <em>What is it made of? How was it folded into a rocket? How did rovers keep driving when wheels broke?</em></p>
+        </div>
+        <div class="card">
+          <span class="tag">THE IMPACT</span>
+          <h3>Systems Thinking</h3>
+          <p>Moving learners from passive memorization to active mission planners who understand the trade-offs between science reward, battery life, and wheel slip.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>FORGEPATH // CHALLENGE & PROBLEM DEFINITION</span>
+        <span>SLIDE 02 / 07</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: MULTI-WORLD 3D ENVIRONMENTS -->
+    <section class="slide" id="slide-3">
+      <div>
+        <span class="tag">CORE ARCHITECTURE // THREE.JS WEBGL</span>
+        <h2>Multi-World Procedural Environments</h2>
+        <p class="subtitle">Instantly switch between real planetary terrains with authentic atmospheric physics.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card" style="border-top: 3px solid #ff6239;">
+          <h3>Mars: Jezero Crater</h3>
+          <p>Rust-orange basaltic topography, Rayleigh atmospheric dust scattering, dynamic solar angles, and Perseverance touchdown waypoints.</p>
+          <div class="stat-badge">
+            <strong>-2,530 m Elevation</strong>
+            <span>Western Fan Paleolake Delta</span>
+          </div>
+        </div>
+        <div class="card" style="border-top: 3px solid #cbd5e1;">
+          <h3>Moon: Hadley-Apennine</h3>
+          <p>High-contrast regolith, zero-atmosphere vacuum sky, sharp unscattered lighting, the Apennine peaks, and an Earthrise celestial view.</p>
+          <div class="stat-badge">
+            <strong>1/6th Earth Gravity</strong>
+            <span>Apollo 15 Lunar Rover Traverse</span>
+          </div>
+        </div>
+        <div class="card" style="border-top: 3px solid #38bdf8;">
+          <h3>Deep Space: Sun-Earth L2</h3>
+          <p>Cosmic starfields and gravitational Lagrange telemetry mapping James Webb's orbit and Voyager 1's journey past the heliopause.</p>
+          <div class="stat-badge">
+            <strong>162 AU from Sun</strong>
+            <span>Interstellar Boundary Exploration</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>FORGEPATH // 3D GRAPHICS & WORLDS</span>
+        <span>SLIDE 03 / 07</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: 3D MINIMAP & TOPOGRAPHIC RELIEF -->
+    <section class="slide" id="slide-4">
+      <div>
+        <span class="tag">CARTOGRAPHY & NAVIGATION</span>
+        <h2>Dual-Mode 3D MiniMap & Topographic Relief</h2>
+        <p class="subtitle">Macroscopic orbital perspective paired with microscopic geologic canyon wireframes.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="tag">MODE 01</span>
+          <h3>Interactive 3D Orbital Globes</h3>
+          <ul class="bullet-list">
+            <li>Procedurally mapped planetary bodies featuring lunar maria, ejecta rays, and Martian craters.</li>
+            <li><strong>Pulsing Landing Beacons</strong> for Apollo 11, Apollo 15, Apollo 17, Luna 17, Chandrayaan-3, Perseverance, Curiosity, and Pathfinder.</li>
+            <li>Full 360° OrbitControls, coordinate telemetry, and True North compass tracker.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="tag">MODE 02</span>
+          <h3>Topographic Wireframe Relief Mesh</h3>
+          <ul class="bullet-list">
+            <li>Inspect real geological formations in elevation wireframes.</li>
+            <li><strong>Hadley Rille</strong>: Explore the 1.2-km-wide, 300-m-deep collapsed lunar lava chasm navigated by Apollo 15 astronauts.</li>
+            <li><strong>Jezero Delta Front</strong>: Trace the river delta terraces where Perseverance drills for ancient biosignatures.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>FORGEPATH // PLANETARY MAPPING</span>
+        <span>SLIDE 04 / 07</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: HARDWARE ANATOMY & INQUIRY -->
+    <section class="slide" id="slide-5">
+      <div>
+        <span class="tag">SPACE ARCHAEOLOGY ATLAS</span>
+        <h2>Hardware Anatomy & Inquiry-Driven Learning</h2>
+        <p class="subtitle">Disassembling the machines that made extraterrestrial discoveries possible.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <ul class="bullet-list">
+            <li><strong>Interactive Subsystem Inspection</strong>: Click to deconstruct wire-mesh lunar wheels, beryllium gold-coated mirrors, laser retroreflectors, and rock drills.</li>
+            <li><strong>NASA Archives & Live API</strong>: Direct access to the NASA Image and Video Library with resilient, curated offline CDN backups.</li>
+            <li><strong>Human Teams</strong>: Spotlighting astronauts, Lavochkin engineers, and JPL roboticists who built and guided the missions.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--accent-blue);">
+          <span class="tag">STEM PEDAGOGY</span>
+          <h3>Questions to Carry Forward</h3>
+          <p>Every artifact card presents open-ended engineering prompts to stimulate student reflection:</p>
+          <div class="stat-badge" style="border-left-color: var(--accent-blue); background: rgba(78, 168, 222, 0.05);">
+            <strong>"What would you bring if every gram had to earn its place?"</strong>
+            <span>Apollo Lunar Roving Vehicle Prompt</span>
+          </div>
+          <div class="stat-badge" style="border-left-color: var(--accent-blue); background: rgba(78, 168, 222, 0.05); margin-top: 0.5rem;">
+            <strong>"Can a mechanical failure become a new way to explore?"</strong>
+            <span>Spirit Rover Wheel Strategy Prompt</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>FORGEPATH // HARDWARE ATLAS</span>
+        <span>SLIDE 05 / 07</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: MISSION CONTROL & ROUTE SCORING -->
+    <section class="slide" id="slide-6">
+      <div>
+        <span class="tag">MISSION CONTROL TELEMETRY</span>
+        <h2>Live Telemetry & Traverse Route Planner</h2>
+        <p class="subtitle">Real environmental constraints meet autonomous route optimization.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="tag">AUTHENTIC TELEMETRY</span>
+          <h3>Atmospheric & Environmental Data</h3>
+          <ul class="bullet-list">
+            <li><strong>Mars MEDA Sensor Suite</strong>: Real-time air pressure (720 Pa), wind speed, temperature, dust opacity (&tau; 0.18), and gas fractions.</li>
+            <li><strong>Apollo ALSEP Telemetry</strong>: Ultra-high vacuum exosphere (10⁻¹² Torr), solar wind ion flux, and cosmic radiation tracking.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="tag">DECISION ENGINE</span>
+          <h3>Traverse Route Scoring</h3>
+          <ul class="bullet-list">
+            <li>Students pick objectives: <strong>Chase Water</strong>, <strong>Find Samples</strong>, or <strong>Safe Passage</strong>.</li>
+            <li>Calculates real trade-offs: Science payoff (0-100) vs. regolith wheel slip (%), slope hazards, and rover battery margins.</li>
+            <li><strong>Student Golden Record</strong>: Archive personal messages for future interplanetary explorers.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>FORGEPATH // MISSION CONTROL</span>
+        <span>SLIDE 06 / 07</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: ARCHITECTURE & FUTURE VISION -->
+    <section class="slide" id="slide-7">
+      <div>
+        <span class="tag">GLOBAL IMPACT & WHAT'S NEXT</span>
+        <h2>Architecture, Impact & The Artemis Generation</h2>
+        <p class="subtitle">Empowering the students who will walk on Mars and return to the Moon.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <span class="tag">TECH STACK</span>
+          <h3>Resilient Web Architecture</h3>
+          <p>Three.js WebGL + Vite + Vercel Serverless Functions + NASA Image APIs. 100% resilient with offline CDN fallbacks for classroom reliability.</p>
+        </div>
+        <div class="card">
+          <span class="tag">COMMUNITY IMPACT</span>
+          <h3>Classroom Ready</h3>
+          <p>Zero installation, accessible on low-spec Chromebooks, compliant with NASA Space Apps open-science standards, and free for educators worldwide.</p>
+        </div>
+        <div class="card">
+          <span class="tag">ROADMAP</span>
+          <h3>Future Horizons</h3>
+          <p>Artemis III lunar traverse tracking, HiRISE 0.25m/px stereo terrain chunks, WebXR headset mode, and multiplayer student rover teams.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>FORGEPATH // CONCLUSION & CALL TO ACTION</span>
+        <span style="color:var(--accent);">TRY THE LIVE DEMO & GITHUB REPO</span>
+        <span>SLIDE 07 / 07</span>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 7;
+
+    function showSlide(n) {
+      if (n < 1) n = 1;
+      if (n > totalSlides) n = totalSlides;
+      currentSlide = n;
+
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        slide.classList.toggle('active', idx + 1 === currentSlide);
+      });
+
+      document.getElementById('counter').textContent = `SLIDE ${currentSlide} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'Home') {
+        showSlide(1);
+      } else if (e.key === 'End') {
+        showSlide(totalSlides);
+      }
+    });
+  </script>
+</body>
+</html>
