@@ -1,125 +1,169 @@
 # Forgepath
 
-Forgepath is an immersive hardware atlas for the NASA Space Apps challenge. It introduces school-age space enthusiasts to the machines humans have left on the Moon, Mars, and in deep space—and the science those machines made possible.
+Forgepath is an interactive hardware atlas and 3D exploration experience built for the NASA Space Apps Challenge. Explore artifacts from missions to the Moon, Mars, and deep space through an immersive, browser-based interface.
 
-## Run locally
+> Current prototype: a Vite-powered frontend with a Three.js scene, mission dashboard, procedural terrain, and a Node.js API that proxies NASA data.
+
+## Highlights
+
+- **Multi-world explorer** — switch between Mars, the Moon, and deep space.
+- **Procedural 3D environments** — explore procedural terrain, planetary globes, starfields, and a lunar relief view.
+- **Hardware atlas** — browse and inspect Moon, Mars, and deep-space artifacts.
+- **Mission telemetry** — view terrain, environment, surface-assets, and route-planning information.
+- **Route scoring** — evaluate routes for water, sample, or safe objectives.
+- **NASA live-data integrations** — browse Perseverance imagery and NASA Image and Video Library content through the local API.
+- **Offline fallback** — cached and bundled mission imagery keep the experience usable when NASA services are unavailable.
+
+## Tech stack
+
+- JavaScript (ES modules)
+- HTML and CSS
+- [Vite](https://vite.dev/) 6
+- [Three.js](https://threejs.org/) for 3D scenes and visualizations
+- [Lucide](https://lucide.dev/) for icons
+- Node.js API server
+- NASA public APIs
+- Vercel serverless deployment support
+
+## Project structure
+
+```text
+forgepath/
+├── api/
+│   └── index.js          Vercel serverless API entry point
+├── server/
+│   └── index.js          Local Node.js API and route handlers
+├── src/
+│   ├── data/
+│   │   ├── client.js     API base configuration
+│   │   └── nasa.js       Rover-photo client and offline cache
+│   ├── main.js           Application shell and interactions
+│   ├── minimap3d.js      3D globe and relief visualizations
+│   └── style.css         Responsive visual system
+├── index.html
+├── slides.html
+├── vite.config.js
+├── vercel.json
+└── package.json
+```
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 18 or newer
+- npm
+
+### Install
 
 ```bash
 npm install
+```
+
+### Run locally
+
+Start the Vite frontend and Node.js API together:
+
+```bash
 npm run dev
 ```
 
-Run the frontend and backend together (recommended):
+The development services are available at:
+
+- Frontend: `http://localhost:5173`
+- API: `http://localhost:8787`
+
+`npm run dev:all` is also available as an explicit alias for the combined development command.
+
+### Optional NASA API configuration
+
+Copy the example environment file and add a key:
 
 ```bash
-npm run dev:all
+cp .env.example .env
 ```
 
-The Vite app runs on `http://localhost:5173` and the API runs on `http://localhost:8787`.
+```dotenv
+NASA_API_KEY=your_nasa_api_key_here
+PORT=8787
+```
 
-`npm run dev` also starts both services. If you see `API route not found`, stop any previously running Vite process and restart with `npm run dev`; the client will then call the API directly at port `8787` in development.
+A key is optional. When `NASA_API_KEY` is omitted, the backend uses `DEMO_KEY`. If NASA requests are unavailable or rate-limited, the application uses local fallback data and continues to render the 3D experience.
 
-Production check:
+## Production build
 
 ```bash
 npm run build
 npm run preview
 ```
 
-Optional NASA API configuration:
+The Vite production preview is served on `http://localhost:4173`. The API must be running on port `8787` for backend-backed features in the local preview environment.
 
-```bash
-NASA_API_KEY=your_key_here npm run dev
-```
+## API
 
-Without a key, the app uses NASA's `DEMO_KEY`; if the request is rate-limited or unavailable, the mission log uses a local fallback and the 3D experience remains usable.
+The backend is implemented once in `server/index.js` and can run as a local Node server or through the Vercel entry point in `api/index.js`.
 
-## Architecture
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/health` | Health check |
+| `GET` | `/api/mars/missions` | Pathfinder, Curiosity, and Perseverance registry |
+| `GET` | `/api/hardware` | Moon, Mars, and deep-space hardware atlas |
+| `GET` | `/api/hardware/:id` | Detailed hardware and mission story |
+| `GET` | `/api/mars/photos` | Cached NASA Mars Rover Photos proxy |
+| `GET` | `/api/live/images?q=<query>` | NASA Image and Video Library search |
+| `GET` | `/api/live/apod` | NASA Astronomy Picture of the Day |
+| `GET` | `/api/live/overview` | Combined NASA image overview |
+| `GET` | `/api/mars/terrain` | Terrain metadata contract |
+| `GET` | `/api/mars/map` | Mars exploration layers and route waypoints |
+| `GET` | `/api/mars/environment` | Environment telemetry contract; values are simulated |
+| `POST` | `/api/routes/score` | Score a water, sample, or safe route |
+| `POST` | `/api/messages` | Validate and archive Golden Record-style messages |
 
-```text
-index.html
-└── src/
-    ├── main.js       App shell, narrative data, Three.js scene, interactions
-    └── style.css     Visual system, responsive layout, dashboard components
-```
+## Development roadmap
 
-The prototype intentionally uses a procedural Three.js scene instead of shipping large terrain textures. This keeps the first iteration fast and makes the data layer easy to replace with NASA assets later.
+### Foundation — in progress
 
-### Experience flow
+- Vite and Three.js baseline
+- Procedural terrain and atmospheric scenes
+- Multi-world switching and mission dashboard
+- Hardware filtering and artifact detail views
+- Route-planning interactions
 
-1. **Multi-World Explorer** — Seamless topbar world switcher supporting **Mars** (Jezero Crater), **Moon** (Hadley Rille & Apennines), and **Deep Space** (Sun-Earth L2 Lagrange Point & Interstellar).
-2. **Landing / Descent** — Fixed WebGL canvas with procedural topography:
-   - **Mars**: Rust-orange basaltic topography, dusty atmospheric haze, and warm sunlight.
-   - **Moon**: High-contrast lunar regolith, deep vacuum sky, realistic Earthrise in the celestial background, and sharp unscattered lighting.
-   - **Deep Space**: Deep cosmic starfield, nebula clouds, and deep-space telemetry.
-3. **Interactive 3D MiniMap & Relief** — Dual-mode 3D globe and relief visualizer:
-   - **3D Globe Mode**: Procedural planetary globes with dark lunar maria, bright ejecta rays, crater topography, and pulse-animated landing site pins (Apollo 11, Apollo 15, Apollo 17, Luna 17, Chandrayaan-3, Perseverance, Curiosity, Pathfinder).
-   - **3D Relief Mode**: Detailed topographic wireframe mesh depicting the sinuous Hadley Rille collapsed lava canyon and towering Apennine mountain range.
-4. **Historical narrative & Artifact stories** — Scroll reveal transitions, hover-driven camera movement across exploration milestones, and rich hardware catalog with filter chips (`ALL`, `MOON`, `MARS`, `DEEP SPACE`).
-5. **Mission control** — Dynamic multi-world telemetry panel (Terrain, Environment, Surface Assets, Route Planner) and interactive traverse evaluator (Apollo 15 LRV-1 / Artemis III traverse scoring).
+### NASA data expansion
 
-## Development plan
+- Replace more generated assets with NASA imagery and elevation products
+- Add typed adapters for NASA Eyes, MOLA elevation, and mission metadata
+- Add loading states, attribution, and request caching
+- Expand offline coverage
 
-### Phase 1 — Foundation (current)
+### Exploration tools
 
-- Vite + Three.js baseline
-- Procedural low-poly terrain and atmospheric scene
-- Scroll narrative and responsive dashboard shell
-- Mission objective selection and route-planner action
+- Score routes using elevation, slope, science targets, communications, and energy cost
+- Add editable waypoints and route comparison
+- Persist routes in URL state or local storage
 
-### Phase 2 — NASA data layer
+### Accessibility and performance
 
-- `src/data/nasa.js` now requests recent Perseverance imagery from the Mars Rover Photos API, with caching and offline fallback.
-- Add a typed `src/data/` layer for NASA Eyes, MOLA elevation, and mission metadata.
-- Replace generated terrain with tiled elevation/imagery textures and LOD terrain chunks.
-- Add loading, offline fallback, attribution, and request caching.
+- Add reduced-motion behavior and keyboard route navigation
+- Provide 2D fallbacks for environments without WebGL support
+- Add captions and transcripts
+- Add GPU-aware quality controls for mobile devices
+- Add automated visual smoke tests and performance budgets
 
-### Phase 3 — Exploration tools
+## Contributing
 
-- Implement route scoring from elevation, slope, science targets, communications, and energy cost.
-- Add a route editor with waypoints, hover inspection, and compare mode.
-- Persist a visitor’s route in URL state or local storage.
+Contributions are welcome. Please open an issue to discuss a substantial feature or bug fix before submitting a pull request.
 
-### Phase 4 — Storytelling and accessibility
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes.
+4. Run `npm run build` to verify the production bundle.
+5. Open a pull request with a clear summary and testing notes.
 
-- Drive camera choreography from a declarative timeline rather than section conditionals.
-- Add reduced-motion mode, keyboard route navigation, captions/transcripts, and a 2D map fallback for WebGL failures.
-- Test mobile GPU budgets and progressively reduce geometry, DPR, and post-processing.
+## License
 
-### Phase 5 — Ship
+Forgepath is available under the [MIT License](LICENSE).
 
-- Add automated visual smoke tests and performance budgets.
-- Deploy static build to GitHub Pages, Netlify, or NASA Space Apps hosting.
-- Document all NASA data sources and open-source licenses.
+## NASA data attribution
 
-## Suggested production structure
-
-```text
-src/
-├── app/              route state and section orchestration
-├── components/       dashboard, story cards, controls
-├── data/             NASA API adapters and local fallback data
-├── scene/            terrain, camera timeline, labels, post-processing
-├── styles/           tokens and component styles
-└── main.js
-```
-
-The current API adapter is `src/data/nasa.js`. It requests the local backend, which proxies NASA's Mars Rover Photos endpoint, caches successful results for 15 minutes, and exposes a fallback payload for offline/error states.
-
-### Backend endpoints
-
-- `GET /api/health` — service health check
-- `GET /api/mars/missions` — Pathfinder, Curiosity, and Perseverance registry
-- `GET /api/hardware` — Moon, Mars, and deep-space hardware atlas
-- `GET /api/hardware/:id` — artifact construction story, materials, science, and NASA image gallery
-- `GET /api/mars/photos?rover=perseverance&sol=1284` — cached NASA image proxy
-- `GET /api/live/images?q=Mars+rover` — NASA Image and Video Library search
-- `GET /api/live/apod` — NASA Astronomy Picture of the Day
-- `GET /api/live/overview` — combined current NASA image overview
-- `GET /api/mars/terrain` — terrain metadata contract for future MOLA tiles
-- `GET /api/mars/map` — integrated Marswalk layers: MOLA terrain, mission sites, route waypoints, and condition status
-- `GET /api/mars/environment` — dashboard telemetry contract; currently marked simulated
-- `POST /api/routes/score` — scores a `water`, `sample`, or `safe` objective and returns waypoints
-- `POST /api/messages` — validates and archives student Golden Record-style messages
-
-The product is structured around the official challenge question and audience: school-age space enthusiasts can ask **what hardware was left behind, why was it built, who carried the mission, what challenges did it face, and what science did it make possible?** The current atlas includes hardware from the Moon, Mars, and deep space.
+Forgepath uses public NASA APIs and imagery. NASA data remains subject to NASA's applicable usage and attribution policies. Interface telemetry and environment values that are not sourced from NASA are marked as simulated in the application or API responses.
