@@ -119,46 +119,6 @@ The backend is implemented once in `server/index.js` and can run as a local Node
 | `POST` | `/api/routes/score` | Score a water, sample, or safe route |
 | `POST` | `/api/messages` | Validate and archive Golden Record-style messages |
 
-## Development roadmap
-
-### Foundation — in progress
-
-- Vite and Three.js baseline
-- Procedural terrain and atmospheric scenes
-- Multi-world switching and mission dashboard
-- Hardware filtering and artifact detail views
-- Route-planning interactions
-
-### NASA data expansion
-
-- Replace more generated assets with NASA imagery and elevation products
-- Add typed adapters for NASA Eyes, MOLA elevation, and mission metadata
-- Add loading states, attribution, and request caching
-- Expand offline coverage
-
-### Exploration tools
-
-- Score routes using elevation, slope, science targets, communications, and energy cost
-- Add editable waypoints and route comparison
-- Persist routes in URL state or local storage
-
-### Accessibility and performance
-
-- Add reduced-motion behavior and keyboard route navigation
-- Provide 2D fallbacks for environments without WebGL support
-- Add captions and transcripts
-- Add GPU-aware quality controls for mobile devices
-- Add automated visual smoke tests and performance budgets
-
-## Contributing
-
-Contributions are welcome. Please open an issue to discuss a substantial feature or bug fix before submitting a pull request.
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Make your changes.
-4. Run `npm run build` to verify the production bundle.
-5. Open a pull request with a clear summary and testing notes.
 
 ## License
 
